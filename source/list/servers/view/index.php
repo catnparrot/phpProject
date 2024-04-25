@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/customStyle.css">
-    <title>H1SYSTEM</title>
+    <title>testSrv</title>
 
     <style>
         /* CSS 스타일링은 선택사항입니다. */

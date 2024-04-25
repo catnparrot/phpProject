@@ -1,3 +1,4 @@
+// == 현재 페이지에 맞는 select value 갱신 == //
 // 현재 URL의 쿼리 매개변수 가져오기
 var queryString = window.location.search;
 
@@ -7,12 +8,14 @@ var urlParams = new URLSearchParams(queryString);
 // 쿼리값 가져오기
 var query_value = urlParams.get("co");
 
-if (query_value) {
-    document.getElementById('company_list').value = query_value;
-}
+// #company_list(select) value 갱신
+if (query_value) { document.getElementById('company_list').value = query_value; }
+// == /현재 페이지에 맞는 select value 갱신 == //
 
-// -- functions -- //
-function submitForm() {
+// == functions == //
+// servers page에서 select의 option들 중 하나 선택 이후 URL 리다이렉트하는 function
+function submitForm()
+{
     var selectedOption = document.getElementById('company_list').value;
     var url = window.location.href.split('?')[0]; // 현재 페이지 URL을 가져옵니다.
     url += '?co=' + encodeURIComponent(selectedOption); // URL에 쿼리 값을 추가합니다.
@@ -21,31 +24,27 @@ function submitForm() {
     window.location.href = url;
 }
 
-function connectRedmine(path) {
+// Redmine 연결 버튼
+function connectRedmine(path)
+{
     var protocol = window.location.protocol;
     var hostname = window.location.hostname;
-    // var path = "/projects";
     var redmine = protocol + "//" + hostname + ":3000" + path;
-    // if (path2) {
-    //     redmine += path2;
-    // }
+
     console.log(protocol);
     console.log(hostname);
     console.log(redmine);
     window.open(redmine, '_blank');
 }
 
-// 현재 페이지의 이전 URL 가져오기
-function getPreviousPageUrl() {
-    return document.referrer;
-}
+// 현재 페이지의 이전 URL 가져오기(redirectToPreviousPage() 함수에서 활용)
+function getPreviousPageUrl() { return document.referrer; }
 
-// 페이지 이동 함수
-function redirectToPreviousPage() {
+// 페이지 이동 함수(view page에서 활용)
+function redirectToPreviousPage()
+{
     var previousUrl = getPreviousPageUrl();
     var pidValue = document.getElementById('pid').textContent;
-    var reprotocol = window.location.protocol;
-    var rehostname = window.location.hostname;
     
     console.log("이전페이지: ", previousUrl);
     console.log("pidValue: ", pidValue);
@@ -60,7 +59,10 @@ function redirectToPreviousPage() {
     }
 }
 
-function createForm() {
+// -- for DB CRUD pages & AJAX -- //
+// DB 데이터 추가를 위한 UI 구현
+function createForm()
+{
     console.log('init createForm()');
     var buttonRow = document.getElementById("createR");
     var inputRow = document.getElementById("cForm");
@@ -78,7 +80,9 @@ function createForm() {
     childofSelectedTD.focus();
 }
 
-function createdata() {
+// insert문 실행 페이지로 데이터 보내기
+function createdata()
+{
     console.log("initiating function createdata");
 
     var inputs = document.querySelectorAll("#cForm input");
@@ -125,15 +129,15 @@ function createdata() {
     });
 }
 
-function refreshContent() {
+// table 불러오기(갱신)
+function refreshContent()
+{
     var queryString = window.location.search;
     var urlParams = new URLSearchParams(queryString);
     var co = urlParams.get('co');
     var coQuery = "?co=" + co;
     var php = "index.php";
-    if (co) {
-        php += coQuery;
-    }
+    if (co) { php += coQuery; }
     
     return new Promise(function(resolve, reject) {
         var xhttp = new XMLHttpRequest();
@@ -159,7 +163,9 @@ function refreshContent() {
     });
 }
 
-function updatedata(id, columnt, column, newText) {
+// update문 페이지로 데이터 보내기
+function updatedata(id, columnt, column, newText)
+{
     console.log("Update data for ID: " + id + ", 위치: " + columnt + ", Column:" + column + ", Text: " + newText);
 
 
@@ -186,24 +192,11 @@ function updatedata(id, columnt, column, newText) {
         var params = 'id=' + encodeURIComponent(id) + '&column=' + encodeURIComponent(column) + '&newText=' + encodeURIComponent(newText);
         xhr.send(params);
     });
-
-    // var xhr = new XMLHttpRequest();
-    // xhr.open('POST', 'update.php', true);
-    // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    // xhr.onreadystatechange = function() {
-    //     if (xhr.readyState == XMLHttpRequest.DONE) {
-    //         if (xhr.status == 200) {
-    //             console.log('sending data: ' + xhr.responseText); // debugging
-    //         } else {
-    //             console.error('Error occurred: ' + xhr.status);
-    //         }
-    //     }
-    // };
-    // var params = 'id=' + encodeURIComponent(id) + '&column=' + encodeURIComponent(column) + '&newText=' + encodeURIComponent(newText);
-    // xhr.send(params);
 }
 
-function updatedata4detail(data, data2) {
+// update문 페이지로 데이터 보내기(view 페이지 전용)
+function updatedata4detail(data, data2)
+{
     console.log("data: ", data);
     console.log("initiating function createdata");
 
@@ -242,7 +235,9 @@ function updatedata4detail(data, data2) {
     });
 }
 
-function deletedata(data) {
+//delete문 페이지로 데이터 보내기
+function deletedata(data)
+{
     return new Promise(function(resolve, reject) {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'delete.php', true);
@@ -264,20 +259,22 @@ function deletedata(data) {
     });
 }
 
-function editEvent(a) {
+// update문 페이지에 데이터를 보내기 위한 편집 UI 구현
+function editEvent(a)
+{
     console.log('initating func editEvent()');
     console.log(a);
     
     var originalContent = '';
     var isEditing = false;
-    // var dblclickcheck = false;
     var entercheck = false;
     var entercheck2 = false;
     var esccheck = false;
     var esccheck2 = false;
 
     var editableCells = document.querySelectorAll('.editable');
-    if(editableCells){
+    if(editableCells)
+    {
         editableCells.forEach(function(cell) {
             cell.addEventListener('dblclick', function() {
                 if(!isEditing)
@@ -300,16 +297,27 @@ function editEvent(a) {
 
                         inputDate.focus();
 
-                        // input에서 포커스를 잃을 때 (blur 이벤트) 변경된 날짜 저장
+                        // input에서 포커스를 잃을 때 변경된 날짜 저장
                         inputDate.addEventListener("blur", function() {
-                            // if (currentDate !== inputDate.value && !entercheck2 && !esccheck2) {    
-                                cell.textContent = currentDate;
+                            if (currentDate !== inputDate.value && !entercheck2 && !esccheck2)
+                            {
+                                if(confirm("변경을 취소하시겠습니까?"))
+                                {
+                                    cell.textContent = currentDate;
 
-                                isEditing = false;
+                                    entercheck2 = false;
+                                    isEditing = false;
 
-                                // 이벤트 리스너 삭제
-                                this.remove();
-                            // }
+                                    // 이벤트 리스너 삭제
+                                    this.remove();
+                                }
+                                else
+                                {
+                                    setTimeout(() => {
+                                        inputDate.focus();
+                                    }, 0);
+                                }
+                            }
                         });
                         
                         inputDate.addEventListener('keypress', function(e) {    
@@ -318,13 +326,14 @@ function editEvent(a) {
                             var id = cell.parentElement.id; // assuming you have unique IDs for rows
                             var columnt = Array.prototype.indexOf.call(cell.parentElement.children, cell); // assuming you want to update the same column
                             var column = cell.id;
+                            var replacedThis = this;
                             
-                            entercheck2 = true;
                             if (e.key === 'Enter')
                             {
+                                entercheck2 = true;
                                 console.log('check cal value: ');
                                 console.log(this.value);
-                                if(this.value == "0001-01-01")
+                                if(this.value == "0001-01-01")  //삭제해도 되는 조건문. else절의 cell.textContent = this.value;가 핵심. 이것만 살리기
                                 {
                                     cell.textContent = "";
                                     newdata = "";
@@ -340,20 +349,21 @@ function editEvent(a) {
                                     .then(function(response) {
                                         // 이벤트 리스너 삭제
                                         console.log("response: ");
-                                        console.log(response);
-                                        this.remove();
+                                        console.log(response);                            
+                                        entercheck2 = false;
+                                        replacedThis.remove();
                                     })
                                     .catch(function(error) {
                                         console.error("inputDate Event err: ", error);
-                                        alert('update에 실패했습니다.');
+                                        alert('이벤트 관리 코드에 문제가 생겼습니다. 콘솔을 확인해주세요.');
                                     });
                             }
-                            entercheck2 = false;
                         });
 
                         inputDate.addEventListener('keydown', function(e) {
                             esccheck2 = true;
-                            if(e.key === 'Escape') {
+                            if(e.key === 'Escape')
+                            {
                                 cell.textContent = currentDate;
 
                                 isEditing = false;
@@ -361,6 +371,7 @@ function editEvent(a) {
                                 // 이벤트 리스너 삭제
                                 this.remove();
                             }
+                            entercheck2 = false;
                             esccheck2 = false;
                         });
                     }
@@ -457,271 +468,144 @@ function editEvent(a) {
     }
 }
 
-function editEvent4detail(a) {
+// update문 페이지에 데이터를 보내기 위한 편집 UI 구현(view 페이지 전용)
+function editEvent4detail(a)
+{
     console.log('initating func editEvent4detail()');
     console.log(a);
 
     var originalContent = {};
 
+    var allBtns = document.querySelectorAll('.btnintable');
+    allBtns.forEach(function(btn) {
+        var buttonType11 = btn.querySelector("#createUpdateForm");
+        var buttonType12 = btn.querySelector("#back2list");
+        var buttonType21 = btn.querySelector("#updateDetail");
+        var buttonType22 = btn.querySelector("#cancle2update");
+    
+        buttonType11.addEventListener('click', function(e) {                    
+            var table = e.target.closest('table');
+            var editableCells = table.querySelectorAll('.detail_value');
 
-    // if(document.querySelector('.detail_value'))
-    // {
-        var allBtns = document.querySelectorAll('.btnintable');
-        allBtns.forEach(function(btn) {
-            var buttonType11 = btn.querySelector("#createUpdateForm");
-            var buttonType12 = btn.querySelector("#back2list");
-            var buttonType21 = btn.querySelector("#updateDetail");
-            var buttonType22 = btn.querySelector("#cancle2update");
-        
-            buttonType11.addEventListener('click', function(e) {                    
-                var table = e.target.closest('table');
-                var editableCells = table.querySelectorAll('.detail_value');
+            buttonType11.classList.add("hidden");
+            buttonType12.classList.add("hidden");
+            buttonType21.classList.remove("hidden");
+            buttonType22.classList.remove("hidden");
 
-                buttonType11.classList.add("hidden");
-                buttonType12.classList.add("hidden");
-                buttonType21.classList.remove("hidden");
-                buttonType22.classList.remove("hidden");
+            editableCells.forEach(function(cell) {
+                originalContent[cell.id] = cell.textContent.trim();
+                cell.innerHTML = '';
+                var newEl;
+                if (cell.id==="note" || cell.id==="diskmodel" )
+                {
+                    newEl = document.createElement('textarea');
+                    newEl.value = originalContent[cell.id];
+                }
+                else if(cell.id === "tool")
+                {
+                    newEl = document.createElement('select');
+                    var option0 = document.createElement('option');
+                    var option1 = document.createElement('option');
+                    var option2 = document.createElement('option');
 
-                editableCells.forEach(function(cell) {
+                    option1.text = "X";
+                    option1.value = '2';
+                    option2.text = "O";
+                    option2.value = '1';
+                    newEl.appendChild(option0);
+                    newEl.appendChild(option1);
+                    newEl.appendChild(option2);
 
-                    originalContent[cell.id] = cell.textContent.trim();
-                    cell.innerHTML = '';
-                    var newEl;
-                    if (cell.id==="note" || cell.id==="diskmodel" )
+                    if(originalContent[cell.id]=="O")
                     {
-                        newEl = document.createElement('textarea');
-                        newEl.value = originalContent[cell.id];
+                        newEl.value = '1';
+                        newEl.text = "O";
                     }
-                    else if(cell.id === "tool")
+                    else if(originalContent[cell.id]=="X")
                     {
-                        newEl = document.createElement('select');
-                        var option0 = document.createElement('option');
-                        var option1 = document.createElement('option');
-                        var option2 = document.createElement('option');
-
-                        option1.text = "X";
-                        option1.value = '2';
-                        option2.text = "O";
-                        option2.value = '1';
-                        newEl.appendChild(option0);
-                        newEl.appendChild(option1);
-                        newEl.appendChild(option2);
-
-                        if(originalContent[cell.id]=="O")
-                        {
-                            newEl.value = '1';
-                            newEl.text = "O";
-                        }
-                        else if(originalContent[cell.id]=="X")
-                        {
-                            newEl.value = '2';
-                            newEl.text = "X";
-                        }
+                        newEl.value = '2';
+                        newEl.text = "X";
                     }
-                    else
-                    {
-                        newEl = document.createElement('input');
-                        newEl.value = originalContent[cell.id];
-                    }
-                    newEl.classList.add('edit_area4detail');
-                    cell.appendChild(newEl);
-                
-                });
-
+                }
+                else
+                {
+                    newEl = document.createElement('input');
+                    newEl.value = originalContent[cell.id];
+                }
+                newEl.classList.add('edit_area4detail');
+                cell.appendChild(newEl);
+            
             });
-                            
-            buttonType21.addEventListener('click', function(e) {
-                var table = e.target.closest('table');
-                var editedCells = table.querySelectorAll('.edit_area4detail');
-                updatedata4detail(editedCells, table)
-                    .then(function() {
-                        buttonType21.classList.add("hidden");
-                        buttonType22.classList.add("hidden");
-                        buttonType11.classList.remove("hidden");
-                        buttonType12.classList.remove("hidden");
 
-                        for (var i = 0; i < editedCells.length; i++)
+        });
+                        
+        buttonType21.addEventListener('click', function(e) {
+            var table = e.target.closest('table');
+            var editedCells = table.querySelectorAll('.edit_area4detail');
+            updatedata4detail(editedCells, table)
+                .then(function() {
+                    buttonType21.classList.add("hidden");
+                    buttonType22.classList.add("hidden");
+                    buttonType11.classList.remove("hidden");
+                    buttonType12.classList.remove("hidden");
+
+                    for (var i = 0; i < editedCells.length; i++)
+                    {
+                        var editedCell = editedCells[i];
+                        var newDetailText = editedCell.value.trim();
+                        var newCell = editedCell.parentElement;
+                        console.log('newCell value: ', newCell.id);
+                        if(newCell.id=='tool')
                         {
-                            var editedCell = editedCells[i];
-                            var newDetailText = editedCell.value.trim();
-                            var newCell = editedCell.parentElement;
-                            console.log('newCell value: ', newCell.id);
-                            if(newCell.id=='tool')
+                            if(newDetailText=="1")
                             {
-                                if(newDetailText=="1")
-                                {
-                                    newCell.textContent = "O";
-                                }
-                                else if(newDetailText=="2")
-                                {
-                                    newCell.textContent = "X";
-                                }
-                                else
-                                {
-                                    newCell.textContent = null;
-                                }
+                                newCell.textContent = "O";
+                            }
+                            else if(newDetailText=="2")
+                            {
+                                newCell.textContent = "X";
                             }
                             else
                             {
-                                newCell.textContent = newDetailText;
+                                newCell.textContent = null;
                             }
                         }
-                    })
-                    .catch(function(error) {
-                        console.log('에러: ', error);
-                    });
-            });
-
-            buttonType22.addEventListener('click', function() {
-                // var cancleCells = document.getElementsByClassName('edit_area4detail'); // 안됨. 분명 11개 가져왔다고 뜨는데 정작 길이와 실제 적용가능한 건 4~5개다 심지어 같은 줄의 td다. 왜? 진짜 원리를 모르겠다...
-                var cancleCells = document.querySelectorAll('.edit_area4detail');
-                
-                console.log(cancleCells);
-
-                for (var i = 0; i < cancleCells.length; i++) {
-                    var cancleCell = cancleCells[i];
-                    var oldCell = cancleCell.parentElement;
-
-                    oldCell.textContent = originalContent[oldCell.id];
-                }
-
-                buttonType21.classList.add("hidden");
-                buttonType22.classList.add("hidden");
-                buttonType11.classList.remove("hidden");
-                buttonType12.classList.remove("hidden");
-            });
+                        else
+                        {
+                            newCell.textContent = newDetailText;
+                        }
+                    }
+                })
+                .catch(function(error) {
+                    console.log('에러: ', error);
+                });
         });
 
-
-        // var buttonType11 = document.querySelector("#createUpdateForm");
-        // var buttonType12 = document.querySelector("#back2list");
-        // var buttonType21 = document.querySelector("#updateDetail");
-        // var buttonType22 = document.querySelector("#cancle2update");
-    
-        // buttonType11.addEventListener('click', function(e) {                    
-        //     var table = e.target.closest('table');
-        //     var editableCells = table.querySelectorAll('.detail_value');
-
-        //     buttonType11.classList.add("hidden");
-        //     buttonType12.classList.add("hidden");
-        //     buttonType21.classList.remove("hidden");
-        //     buttonType22.classList.remove("hidden");
-
-        //     editableCells.forEach(function(cell) {
-
-        //         originalContent[cell.id] = cell.textContent.trim();
-        //         cell.innerHTML = '';
-        //         var newEl;
-        //         if (cell.id==="note" || cell.id==="diskmodel" )
-        //         {
-        //             newEl = document.createElement('textarea');
-        //             newEl.value = originalContent[cell.id];
-        //         }
-        //         else if(cell.id === "tool")
-        //         {
-        //             newEl = document.createElement('select');
-        //             var option0 = document.createElement('option');
-        //             var option1 = document.createElement('option');
-        //             var option2 = document.createElement('option');
-
-        //             option1.text = "X";
-        //             option1.value = '2';
-        //             option2.text = "O";
-        //             option2.value = '1';
-        //             newEl.appendChild(option0);
-        //             newEl.appendChild(option1);
-        //             newEl.appendChild(option2);
-
-        //             if(originalContent[cell.id]=="O")
-        //             {
-        //                 newEl.value = '1';
-        //                 newEl.text = "O";
-        //             }
-        //             else if(originalContent[cell.id]=="X")
-        //             {
-        //                 newEl.value = '2';
-        //                 newEl.text = "X";
-        //             }
-        //         }
-        //         else
-        //         {
-        //             newEl = document.createElement('input');
-        //             newEl.value = originalContent[cell.id];
-        //         }
-        //         newEl.classList.add('edit_area4detail');
-        //         cell.appendChild(newEl);
+        buttonType22.addEventListener('click', function() {
+            // var cancleCells = document.getElementsByClassName('edit_area4detail'); // 안됨. 분명 11개 가져왔다고 뜨는데 정작 길이와 실제 적용가능한 건 4~5개다 심지어 같은 줄의 td다. 왜? 진짜 원리를 모르겠다...
+            var cancleCells = document.querySelectorAll('.edit_area4detail');
             
-        //     });
+            console.log(cancleCells);
 
-        // });
-                        
-        // buttonType21.addEventListener('click', function() {
-        //     var editedCells = document.querySelectorAll('.edit_area4detail');
-        //     updatedata4detail(editedCells)
-        //         .then(function() {
-        //             buttonType21.classList.add("hidden");
-        //             buttonType22.classList.add("hidden");
-        //             buttonType11.classList.remove("hidden");
-        //             buttonType12.classList.remove("hidden");
+            for (var i = 0; i < cancleCells.length; i++)
+            {
+                var cancleCell = cancleCells[i];
+                var oldCell = cancleCell.parentElement;
 
-        //             for (var i = 0; i < editedCells.length; i++)
-        //             {
-        //                 var editedCell = editedCells[i];
-        //                 var newDetailText = editedCell.value.trim();
-        //                 var newCell = editedCell.parentElement;
-        //                 console.log('newCell value: ', newCell.id);
-        //                 if(newCell.id=='tool')
-        //                 {
-        //                     if(newDetailText=="1")
-        //                     {
-        //                         newCell.textContent = "O";
-        //                     }
-        //                     else if(newDetailText=="2")
-        //                     {
-        //                         newCell.textContent = "X";
-        //                     }
-        //                     else
-        //                     {
-        //                         newCell.textContent = null;
-        //                     }
-        //                 }
-        //                 else
-        //                 {
-        //                     newCell.textContent = newDetailText;
-        //                 }
-        //             }
-        //         })
-        //         .catch(function(error) {
-        //             console.log('에러: ', error);
-        //         });
-        // });
+                oldCell.textContent = originalContent[oldCell.id];
+            }
 
-        // buttonType22.addEventListener('click', function() {
-        //     // var cancleCells = document.getElementsByClassName('edit_area4detail'); // 안됨. 분명 11개 가져왔다고 뜨는데 정작 길이와 실제 적용가능한 건 4~5개다 심지어 같은 줄의 td다. 왜? 진짜 원리를 모르겠다...
-        //     var cancleCells = document.querySelectorAll('.edit_area4detail');
-            
-        //     console.log(cancleCells);
-
-        //     for (var i = 0; i < cancleCells.length; i++) {
-        //         var cancleCell = cancleCells[i];
-        //         var oldCell = cancleCell.parentElement;
-
-        //         oldCell.textContent = originalContent[oldCell.id];
-        //     }
-
-        //     buttonType21.classList.add("hidden");
-        //     buttonType22.classList.add("hidden");
-        //     buttonType11.classList.remove("hidden");
-        //     buttonType12.classList.remove("hidden");
-        // });
-    // }
+            buttonType21.classList.add("hidden");
+            buttonType22.classList.add("hidden");
+            buttonType11.classList.remove("hidden");
+            buttonType12.classList.remove("hidden");
+        });
+    });
 }
 
-
-
-
-
-function extraBoardForm (data) {
+// insert/update문 페이지에 데이터를 보내기 위한 편집 UI 구현 (view page 전용)
+function extraBoardForm (data)
+{
     var arrayIDData = [];
     
     for (var i = 0; i < data.length; i++)
@@ -769,6 +653,7 @@ function extraBoardForm (data) {
     });
 }
 
+// insert/update문 페이지에 데이터를 보내기 위한 UI 구현 이벤트 작동 펑션 (view page 전용)
 function extraBoard()
 {
     var data = document.querySelectorAll('.superHidden th');
@@ -781,10 +666,7 @@ function extraBoard()
         });
 }
 
-
-
-
-
+// delete문 페이지에 데이터를 보내기 위한 이벤트 펑션
 function deleteEvent(a)
 {
     console.log("deleteEvent: ", a);
@@ -792,11 +674,13 @@ function deleteEvent(a)
     checkEvent4delete();
 
     var deletebutton=document.querySelector('input[type="button"].submitfordelete');
-    if(deletebutton){
+    if(deletebutton)
+    {
         deletebutton.addEventListener("click", handleDeleteClick);
     }
 }
 
+// 삭제할 데이터 수집을 위한 체크박스 이벤트
 function checkEvent4delete()
 {
     var data = [];
@@ -804,11 +688,15 @@ function checkEvent4delete()
     for(var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].addEventListener("change", function(e) {
             var rowId = e.target.closest('tr').id;
-            if (e.target.checked) {
+            if (e.target.checked)
+            {
                 data.push(rowId); // 선택된 경우 배열에 추가
-            } else {
+            }
+            else
+            {
                 var index = data.indexOf(rowId);
-                if (index !== -1) {
+                if (index !== -1)
+                {
                     data.splice(index, 1); // 선택이 해제된 경우 배열에서 제거
                 }
             }
@@ -817,14 +705,18 @@ function checkEvent4delete()
     }
 }
 
-function datarray4delete() {        
+// 삭제할 데이터 수집 후 반환
+function datarray4delete()
+{
     var checkbox = document.getElementsByClassName('checkboxClassName');
     var checkedTrId;
     var Idarray = [];
 
     // checkbox의 개수만큼 반복하면서 체크된 checkbox가 속한 td의 부모인 tr의 id 값을 찾음
-    for (var i = 0; i < checkbox.length; i++) {
-        if (checkbox[i].checked) {
+    for (var i = 0; i < checkbox.length; i++)
+    {
+        if (checkbox[i].checked)
+        {
             // 체크된 checkbox가 속한 td의 부모인 tr의 id 값을 가져와서 변수에 저장
             checkedTrId = checkbox[i].closest('tr').id;
             console.log("체크된 td가 속한 tr의 id 값: " + checkedTrId);
@@ -833,12 +725,28 @@ function datarray4delete() {
     }
     return Idarray;
 }
+// -- /for CRUD pages & AJAX -- //
 
-function handleButtonClick() {
+// -- 이벤트 핸들과 이벤트 이후 처리 -- //
+// click
+function handleButtonClick()    // insert/update
+{
     submitDataForCreate('1');
 }
 
-function handleKeyPress(e) {
+function handleClick2Cancle()   // 취소
+{
+    submitDataForCreate();
+}
+
+function handleDeleteClick()    // delete
+{
+    submitDataForDelete();
+}
+
+// Enter
+function handleKeyPress(e)  // insert/update
+{
     if (e.key === 'Enter') {
         e.preventDefault();
         submitDataForCreate('1');
@@ -846,23 +754,21 @@ function handleKeyPress(e) {
     }
 }
 
-function handleDeleteClick() {
-    submitDataForDelete();
-}
-
-function handleKey2cancle(e) {
+//ESC
+function handleKey2cancle(e)    //취소
+{
     if(e.key === 'Escape')
     {
         submitDataForCreate();
     }
 }
 
-function handleClick2Cancle() {
-    submitDataForCreate();
-}
-
-function submitDataForCreate(a) {
-    if(a) {
+// 데이터 생성 or 생성 취소 후 이벤트 처리
+function submitDataForCreate(a)
+{
+    //매개변수 입력시 생성, 미입력시 취소 
+    if(a)
+    {
         createdata()
             .then(refreshContent)
             .then(function() {
@@ -905,7 +811,9 @@ function submitDataForCreate(a) {
                     }
                 }
             });
-    } else {
+    }
+    else
+    {
         refreshContent()
             .then(function() {
                 editEvent('2');
@@ -922,7 +830,9 @@ function submitDataForCreate(a) {
     }
 }
 
-function submitDataForDelete() {
+// 데이터 삭제 후 이벤트 처리
+function submitDataForDelete()
+{
     var selectedIds = datarray4delete();
 
     console.log("in submitDataForDelete(): ", selectedIds);
@@ -959,6 +869,7 @@ function submitDataForDelete() {
     }
 }
 
+// 데이터 삭제 후 이벤트 처리(view page 전용)
 function submitDetailDataForDelete(data)
 {
     console.log(data);
@@ -972,13 +883,14 @@ function submitDetailDataForDelete(data)
             console.error(error);
         });
 }
-// -- /functions -- //
+// -- 이벤트 핸들과 이벤트 이후 처리 -- //
+// == /functions == //
 
-// -- events -- //
+// == event == //
 document.addEventListener('DOMContentLoaded', function() {
-    
-    console.log('testtsetetsttest: ', window.location.pathname);
+    console.log('window.loaction.pathname: ', window.location.pathname);
 
+    // -- 미구현 코드: 후에 refreshContent() 함수를 다시 손 봐서 대체 요망 -- //
     // if (window.location.pathname === '/list/servers/') {}
 
     // refreshContent()
@@ -1010,6 +922,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //     .catch(function(error) {
     //         console.log('에러: ', error);
     //     });
+    // -- /미구현 코드 -- //
 
     editEvent('1');
     deleteEvent('1');
@@ -1050,4 +963,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-// -- /event -- //
+// == /event == //
